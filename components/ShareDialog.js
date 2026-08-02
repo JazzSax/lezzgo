@@ -11,6 +11,32 @@ export default function ShareDialog({ plan, currentUserId, initialShares, onClos
   const [shares, setShares] = useState(initialShares || []);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState(null);
+  const [isPublic, setIsPublic] = useState(!!plan.is_public);
+  const [pubBusy, setPubBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const publicUrl =
+    (typeof window !== "undefined" ? window.location.origin : "") + `/p/${plan.id}`;
+
+  async function togglePublic(next) {
+    setPubBusy(true);
+    const { error } = await supabase
+      .from("plans")
+      .update({ is_public: next })
+      .eq("id", plan.id);
+    setPubBusy(false);
+    if (error) setMsg({ type: "error", text: error.message });
+    else setIsPublic(next);
+  }
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* clipboard unavailable */
+    }
+  }
 
   async function invite(e) {
     e.preventDefault();
@@ -93,12 +119,53 @@ export default function ShareDialog({ plan, currentUserId, initialShares, onClos
             ✕
           </button>
         </div>
-        <p className="mt-1 text-sm text-slate-400">
-          Invited people can <span className="font-medium text-slate-200">view</span> this
-          plan (read-only).
+        {/* Public link */}
+        <div className="mt-4 rounded-xl border border-base-border p-3">
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={(e) => togglePublic(e.target.checked)}
+              disabled={pubBusy}
+              className="mt-0.5 accent-accent"
+            />
+            <span>
+              <span className="block text-sm font-medium text-slate-100">
+                Anyone with the link can view
+              </span>
+              <span className="block text-xs text-slate-400">
+                Public map + itinerary, no sign-in needed — great for social media.
+                Personal details and photo links stay private.
+              </span>
+            </span>
+          </label>
+          {isPublic && (
+            <div className="mt-3 flex items-center gap-2">
+              <input
+                readOnly
+                value={publicUrl}
+                onFocus={(e) => e.target.select()}
+                className="min-w-0 flex-1 truncate rounded-lg border border-base-border bg-base-surface px-2.5 py-1.5 text-xs text-slate-300"
+              />
+              <button
+                onClick={copyLink}
+                className="shrink-0 rounded-lg bg-base-surface px-2.5 py-1.5 text-xs font-medium text-slate-200 hover:text-white"
+              >
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+          )}
+        </div>
+
+        <h3 className="mt-5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Invite by email
+        </h3>
+        <p className="mt-1 text-xs text-slate-400">
+          Invited people sign in and get member access — everything you share with
+          members, including private photo links (coming soon).
         </p>
 
-        <form onSubmit={invite} className="mt-4 flex gap-2">
+        <form onSubmit={invite} className="mt-3 flex gap-2">
           <input
             type="email"
             value={email}

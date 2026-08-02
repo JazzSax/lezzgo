@@ -1,21 +1,13 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 
 const PHOTON = process.env.PHOTON_BASE_URL || "https://photon.komoot.io";
 const UA = "Lezzgo/0.1 (travel planner; https://github.com)";
 
 // GET /api/place?lat=&lng=&name=
 // Combines OSM (category + address, via Photon reverse) with Wikipedia
-// (photo + summary, via geosearch). Both are free and keyless. Auth-gated.
+// (photo + summary, via geosearch). Both are free, keyless, and NON-personal,
+// so this endpoint is open (used on the public plan page too).
 export async function GET(request) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-
   const sp = new URL(request.url).searchParams;
   const lat = parseFloat(sp.get("lat"));
   const lng = parseFloat(sp.get("lng"));
