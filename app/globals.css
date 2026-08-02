@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-base-bg text-slate-100 antialiased;
+}
+
+/* Thin, unobtrusive scrollbars for the side panels */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-base-border rounded-full;
+}
+
+/* MapLibre popups tuned to the dark theme */
+.maplibregl-popup-content {
+  @apply bg-base-card text-slate-100 border border-base-border rounded-xl shadow-xl;
+  padding: 10px 12px;
+}
+.maplibregl-popup-tip {
+  border-top-color: #16223b !important;
+  border-bottom-color: #16223b !important;
+}
+.maplibregl-ctrl-group {
+  @apply bg-base-card border border-base-border;
+}
