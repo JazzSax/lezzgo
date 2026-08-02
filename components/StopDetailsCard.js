@@ -26,7 +26,7 @@ export default function StopDetailsCard({ payload, onClose }) {
   const showName = stop.label && stop.name && stop.name !== stop.label;
 
   return (
-    <div className="absolute bottom-4 left-4 z-20 w-80 max-w-[calc(100%-2rem)] overflow-hidden rounded-2xl border border-base-border bg-base-card shadow-2xl">
+    <div className="absolute bottom-32 left-3 right-3 z-20 overflow-hidden rounded-2xl border border-base-border bg-base-card shadow-2xl md:bottom-4 md:left-4 md:right-auto md:w-80">
       <div className="relative">
         {loading ? (
           <div className="h-32 animate-pulse bg-base-surface" />

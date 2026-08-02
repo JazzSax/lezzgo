@@ -38,6 +38,7 @@ export default function PublicPlanView({ plan, initialDays, initialNearby, signe
   const [rings, setRings] = useState({ show: true, minutes: [5, 10, 15], speedKmh: 4 });
   const [selectedStop, setSelectedStop] = useState(null);
   const [panelTab, setPanelTab] = useState("days");
+  const [panelOpen, setPanelOpen] = useState(false); // mobile drawer
 
   // playback
   const [pb, setPb] = useState({ playing: false, scope: "day", speed: 1, follow: true });
@@ -76,7 +77,16 @@ export default function PublicPlanView({ plan, initialDays, initialNearby, signe
     <div className="flex h-screen flex-col">
       {/* Public header */}
       <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-base-border px-4">
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+          <button
+            onClick={() => setPanelOpen(true)}
+            className="shrink-0 rounded-lg p-1.5 text-slate-300 hover:bg-base-surface md:hidden"
+            aria-label="Open itinerary"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
           <Link href="/" className="flex shrink-0 items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/lezzgo_logo.svg" alt="Lezzgo" className="h-8 w-8 rounded-lg" />
@@ -103,8 +113,19 @@ export default function PublicPlanView({ plan, initialDays, initialNearby, signe
       </header>
 
       <div className="flex min-h-0 flex-1">
-        <aside className="flex w-full max-w-sm shrink-0 flex-col border-r border-base-border">
-          <div className="flex gap-1 border-b border-base-border px-3 py-2">
+        {panelOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black/50 md:hidden"
+            onClick={() => setPanelOpen(false)}
+          />
+        )}
+        <aside
+          className={`flex w-[86%] max-w-sm shrink-0 flex-col border-r border-base-border bg-base-bg transition-transform duration-200 max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-40 max-md:shadow-2xl md:w-full md:translate-x-0 ${
+            panelOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="flex items-center justify-between gap-1 border-b border-base-border px-3 py-2">
+            <div className="flex gap-1">
             {["days", "nearby"].map((t) => (
               <button
                 key={t}
@@ -118,6 +139,14 @@ export default function PublicPlanView({ plan, initialDays, initialNearby, signe
                 {t === "days" ? "Itinerary" : "Nearby"}
               </button>
             ))}
+            </div>
+            <button
+              onClick={() => setPanelOpen(false)}
+              className="rounded-lg p-1.5 text-slate-400 hover:bg-base-surface md:hidden"
+              aria-label="Close itinerary"
+            >
+              ✕
+            </button>
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto p-3 scrollbar-thin">

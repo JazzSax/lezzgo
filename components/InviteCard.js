@@ -36,7 +36,7 @@ export default function InviteCard({ invite }) {
   const owner = { display_name: invite.owner_name, avatar_url: invite.owner_avatar };
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl border border-accent/30 bg-accent/5 p-4">
+    <div className="flex flex-col gap-3 rounded-2xl border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
         <Avatar profile={owner} size="lg" />
         <div>

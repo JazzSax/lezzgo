@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatDateRange } from "@/lib/format";
 import { dayColor } from "@/lib/geo";
@@ -45,6 +46,7 @@ export default function PlanWorkspace({
   const [shareOpen, setShareOpen] = useState(false);
   const [panelTab, setPanelTab] = useState("days"); // days | nearby
   const [selectedStop, setSelectedStop] = useState(null);
+  const [panelOpen, setPanelOpen] = useState(false); // mobile drawer
 
   // ---- playback state ----
   const [pb, setPb] = useState({ playing: false, scope: "day", speed: 1, follow: true });
@@ -214,8 +216,17 @@ export default function PlanWorkspace({
     <div className="flex h-screen flex-col">
       {/* Top bar */}
       <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-base-border px-4">
-        <div className="flex min-w-0 items-center gap-3">
-          <Link href="/dashboard" className="shrink-0 text-sm text-slate-400 hover:text-slate-100">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+          <button
+            onClick={() => setPanelOpen(true)}
+            className="shrink-0 rounded-lg p-1.5 text-slate-300 hover:bg-base-surface md:hidden"
+            aria-label="Open itinerary"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <Link href="/dashboard" className="hidden shrink-0 text-sm text-slate-400 hover:text-slate-100 sm:block">
             ←
           </Link>
           <div className="min-w-0">
@@ -226,8 +237,10 @@ export default function PlanWorkspace({
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-3">
-          <MemberAvatars owner={owner} members={initialShares || []} />
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <div className="hidden sm:block">
+            <MemberAvatars owner={owner} members={initialShares || []} />
+          </div>
           {canEdit ? (
             <button
               onClick={() => setShareOpen(true)}
@@ -245,9 +258,26 @@ export default function PlanWorkspace({
 
       {/* Body: panel + map */}
       <div className="flex min-h-0 flex-1">
-        <aside className="flex w-full max-w-sm shrink-0 flex-col border-r border-base-border">
+        {panelOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black/50 md:hidden"
+            onClick={() => setPanelOpen(false)}
+          />
+        )}
+        <aside
+          className={`flex w-[86%] max-w-sm shrink-0 flex-col border-r border-base-border bg-base-bg transition-transform duration-200 max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-40 max-md:shadow-2xl md:w-full md:translate-x-0 ${
+            panelOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-1.5 border-b border-base-border px-3 py-3 text-sm text-slate-300 hover:text-white md:hidden"
+          >
+            <ArrowLeft className="h-4 w-4" /> All trips
+          </Link>
           {/* Tabs */}
-          <div className="flex gap-1 border-b border-base-border px-3 py-2">
+          <div className="flex items-center justify-between gap-1 border-b border-base-border px-3 py-2">
+            <div className="flex gap-1">
             {["days", "nearby"].map((t) => (
               <button
                 key={t}
@@ -261,6 +291,14 @@ export default function PlanWorkspace({
                 {t === "days" ? "Itinerary" : "Nearby"}
               </button>
             ))}
+            </div>
+            <button
+              onClick={() => setPanelOpen(false)}
+              className="rounded-lg p-1.5 text-slate-400 hover:bg-base-surface md:hidden"
+              aria-label="Close itinerary"
+            >
+              ✕
+            </button>
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto p-3 scrollbar-thin">

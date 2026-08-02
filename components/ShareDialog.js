@@ -110,7 +110,7 @@ export default function ShareDialog({ plan, currentUserId, initialShares, onClos
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-base-border bg-base-card p-6"
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-base-border bg-base-card p-4 sm:p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -171,7 +171,7 @@ export default function ShareDialog({ plan, currentUserId, initialShares, onClos
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="their@email.com"
-            className="flex-1 rounded-xl border border-base-border bg-base-surface px-3 py-2.5 text-sm focus:border-accent/60 focus:outline-none"
+            className="min-w-0 flex-1 rounded-xl border border-base-border bg-base-surface px-3 py-2.5 text-sm focus:border-accent/60 focus:outline-none"
           />
           <button
             type="submit"
